@@ -2,6 +2,7 @@ from secrets import token_urlsafe
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
+from django.views.generic import DetailView
 
 from .models import User
 
@@ -127,3 +128,24 @@ def create( csrf = 0 ):
 </body></html>
 """
 
+def user_detail(request, login):
+    """ OWASP Top 10: A01:2021-Broken Access Control
+    
+    Data should not be accessible without properly established session.
+    
+    To fix:
+    
+    if not request.session.get("login", False):
+        return redirect("/")
+    """
+    try:
+        user = User.objects.get(login = login)
+        return HttpResponse(f"""
+<html><body>
+    Login: {user.login}
+    <br>
+    Member since: {user.member_since}
+</body></html>
+""")
+    except User.DoesNotExist:
+        return redirect("/")
