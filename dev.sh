@@ -19,6 +19,16 @@ all        Sama kuin '$0 covff && $0 pylint'
 	&& PYTHON_KEYRING_BACKEND=keyring.backends.fail.Keyring \
 	   poetry install --no-root \
 	&& exit 0
+	
+[ $1 = server ] \
+	&& cd src/project_i \
+	&& poetry run python manage.py runserver \
+	&& exit 0
+
+[ $1 = migrate ] \
+	&& cd src/project_i \
+	&& poetry run python manage.py migrate \
+	&& exit 0
 
 [ $1 = pytest ] \
 	&& poetry run pytest -v \
