@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
 from django.views.generic import DetailView
+from django.db import connection
 
 from .models import User
 
@@ -42,20 +43,38 @@ def home(request):
             case "create":
                 if fields["password"] != fields["repeat"]:
                     return redirect("/")
+                    
+                sql_command = f"""
+                    INSERT INTO project_i_user (login, password, member_since)
+                    VALUES (
+                        "{fields["login"]}",
+                        "{fields["password"]}",
+                        {timezone.now().timestamp()}
+                    );
+                """
+                connection.cursor().execute( sql_command )
+                
+                """ OWASP TOP 10: A03:2021-Injection
+                
+                Running SQL queries where user can inject control characters
+                is absolute suicide. To mitigate give argument as separate
+                variables not as text.
+                
+                To fix:
                 new_user = User(
                     login = fields["login"],
                     password = fields["password"],
                     member_since=timezone.now()
                 )
                 new_user.save()
-                request.session["login"] = new_user.login
+                """
+                request.session["login"] = fields["login"]
+                
     
 
     if request.session.get("login", False):
         user = User.objects.get(login = request.session["login"])
     
-    print(str(User.objects.all()))
-        
     csrf = 0
     """ CSRF
     csrf = token_urlsafe(16)
