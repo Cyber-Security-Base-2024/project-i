@@ -25,7 +25,7 @@ all        Sama kuin '$0 covff && $0 pylint'
 	&& exit 0
 
 [ $1 = pylint ] \
-	&& poetry run python3 -m pylint src/miinaharava/ \
+	&& poetry run python3 -m pylint src/project_i/ \
 	&& exit 0
 
 [ $1 = covhtml ] \

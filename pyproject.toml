@@ -8,7 +8,19 @@ packages = [{include = "project_i", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
+django = "4.2.0"
+# OWASP Top 10: A06:2021-Vulnerable and Outdated Components
+# Numerous bugs and CVEs:
+# CVE-2023-31047, CVE-2023-36053, CVE-2023-41164, CVE-2023-43665,
+# CVE-2023-46695, CVE-2024-24680
+# 
+# To fix: 
+# django = "^4.2"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.1"
+pylint = "^3.0.3"
+coverage = "^7.4.2"
 
 [build-system]
 requires = ["poetry-core"]
