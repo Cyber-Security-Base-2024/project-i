@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "project-i"
+version = "0.1.0"
+description = ""
+authors = ["Cyber-Security-Base-2024 <github-hy-cyber-security-base@v.hix.fi>"]
+readme = "README.md"
+packages = [{include = "project_i", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
