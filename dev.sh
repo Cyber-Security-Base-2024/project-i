@@ -27,7 +27,8 @@ all        Sama kuin '$0 covff && $0 pylint'
 
 [ $1 = migrate ] \
 	&& cd src/project_i \
-	&& poetry run python manage.py migrate \
+	&& poetry run python manage.py makemigrations \
+	&& poetry run python manage.py migrate --run-syncdb \
 	&& exit 0
 
 [ $1 = pytest ] \
