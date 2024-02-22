@@ -15,7 +15,8 @@ def home(request):
         for field_data in request.body.decode('utf-8').split('&'):
             name, value = field_data.split("=")
             fields[name]=value
-        print(fields)
+
+
         """ CSRF vulnerability.
         Forms needs to have token that is checked against when processing
         request
@@ -28,6 +29,7 @@ def home(request):
             request.session.flush()
             return redirect("/")
         """
+
         match fields["action"]:
             case "login":
                 try:
