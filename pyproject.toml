@@ -16,6 +16,7 @@ django = "4.2.0"
 # 
 # To fix: 
 # django = "^4.2"
+bcrypt = "^4.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.1"

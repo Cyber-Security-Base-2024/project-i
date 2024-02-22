@@ -1,4 +1,5 @@
 from secrets import token_urlsafe
+from bcrypt import gensalt, hashpw, checkpw
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
@@ -15,7 +16,7 @@ def home(request):
             name, value = field_data.split("=")
             fields[name]=value
         print(fields)
-        """ CSRF vulnerability!
+        """ CSRF vulnerability.
         Forms needs to have token that is checked against when processing
         request
         
@@ -31,8 +32,13 @@ def home(request):
             case "login":
                 try:
                     user = User.objects.get(login = fields["login"])
-                    if user and user.password == fields["password"]:
-                        request.session["login"] = fields["login"]                 
+                    """ HASH
+                    if checkpw(
+                            fields["password"].encode('utf-8'),
+                            user.password.encode('utf-8') ):
+                    """
+                    if user.password == fields["password"]:
+                        request.session["login"] = fields["login"]
                 except User.DoesNotExist:
                     return redirect("/")
             case "logout":
@@ -44,17 +50,32 @@ def home(request):
                 if fields["password"] != fields["repeat"]:
                     return redirect("/")
                     
+                password = fields["password"]
+                """ OWASP Top 10: A02:2021-Cryptographic Failures
+                
+                In this case plaintext passwords are saved in database.
+                Absolutely bad idea as still many uses same paswords through out the
+                internet. So possible leak compomises other sites also.
+                
+                To fix use hashing: (marked as HASH in out commented code)
+
+                password = hashpw(
+                    fields["password"].encode('utf-8'),
+                    gensalt() ).decode('utf-8')
+                """
+                
+                    
                 sql_command = f"""
                     INSERT INTO project_i_user (login, password, member_since)
                     VALUES (
                         "{fields["login"]}",
-                        "{fields["password"]}",
+                        "{password}",
                         {timezone.now().timestamp()}
                     );
                 """
                 connection.cursor().execute( sql_command )
                 
-                """ OWASP TOP 10: A03:2021-Injection
+                """ OWASP Top 10: A03:2021-Injection
                 
                 Running SQL queries where user can inject control characters
                 is absolute suicide. To mitigate give argument as separate
@@ -63,7 +84,7 @@ def home(request):
                 To fix:
                 new_user = User(
                     login = fields["login"],
-                    password = fields["password"],
+                    password = password,
                     member_since=timezone.now()
                 )
                 new_user.save()
